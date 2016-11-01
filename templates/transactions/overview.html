@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<form action="/transactions/{{ account }}/" method="post" class="ink-form">
+    {% csrf_token %}
+    <input type='hidden' name='action' value='add_transaction'>
+    <label for="date">Date</label>
+    {{ transaction_form.date }}
+    <label for="beneficiary">Beneficiary</label>
+    {{ transaction_form.beneficiary }}
+    <label for="budget">Budget</label>
+    {{ transaction_form.budget }}
+    <label for="category">Category</label>
+    {{ transaction_form.category }}
+    <label for="amount">Amount</label>
+    {{ transaction_form.amount }}
+     <label for="direction"></label>
+    {% for item in transaction_form.direction %}
+    {{ item }}
+    {% endfor %}
+    <input type="submit" value="Add Transaction" />
+</form>
+<hr />
+<h2>Transactions for {{ account }} {% if account.balance > 0 %}<span style="color:#239b56">${{ account.balance|intcomma }}</span>{% else %}<span style="color: #FF5733">${{ account.balance|intcomma }}</span>{% endif %}</h2>
+<form action="/transactions/{{ account }}/" method="post" class="ink-form">
+    <input type='hidden' name='action' value='date_filter'>
+    {% csrf_token %}
+    {{ filter_form }}
+    <input type="submit" value="Filter Transactions" />
+</form>
+<table class="ink-table alternating">
+    <thead>
+    <tr>
+        <th class="align-left">Date</th>
+        <th class="align-left">Payee</th>
+        <th class="align-left">Amount</th>
+    </tr>
+  </thead>
+    {% for transaction in transactions %}
+    <tr>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.beneficiary }}</td>
+        <td>{{ transaction.amount }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% if error %}
+<p style="color:#FF5733">{{ error }}</p>
+{% endif %}
+
+{% endblock %}

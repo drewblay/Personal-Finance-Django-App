@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script src="/static/js/jquery-3.1.1.min.js.js" type="text/javascript"></script>
+<script src="/static/highcharts/highcharts.js"></script>
+<script src="/static/highcharts/modules/exporting.js"></script>
+{% endblock %}
+{% block content %}
+<h2>Overview of accounts</h2>
+<div class="all-25">
+<table class="ink-table alternating">
+    <thead>
+    <tr>
+        <th class="align-left">Acount</th>
+        <th class="align-left">Balance</th>
+    </tr>
+    </thead>
+{% for account in accounts %}
+    <tr>
+        <td><a href="/transactions/{{ account }}/">{{ account }}</a></td>
+        <td>{{ account.balance }}</td>
+    </tr>
+{% endfor %}
+    </table>
+    </div>
+<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<script>
+$(function () {
+
+    $(document).ready(function () {
+
+        // Build the chart
+        $('#container').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Spending by Category'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: [
+                 {% for key, value in chart_data.items %}
+                {
+                    name: '{{ key }}',
+                    y: {{ value }}
+                }{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+
+                ]
+            }]
+        });
+    });
+});
+</script>
+</div>
+{% endblock %}

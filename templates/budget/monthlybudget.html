@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load mathfilters %}
+{% block content %}
+<form action="/budgets/" method="POST" class="ink-form">
+    {% csrf_token %}
+    <input type='hidden' name='action' value='add_budget'>
+    <label for="budget">Budget</label>
+    {{ budget_form.budget }}&nbsp;
+    <label for="amount">Amount</label>
+    {{ budget_form.amount }}&nbsp;
+    <label for="starting_month">Starts in Month</label>
+    {{ budget_form.starting_month }}&nbsp;
+    <label for="duration">Duration:</label>
+    {% for item in budget_form.duration %}
+    &nbsp;{{ item }}&nbsp;
+    {% endfor %}
+    &nbsp;&nbsp;&nbsp;
+    <input type="submit" value="Add Budget" />
+</form>
+<h3>Budget for {{ header }}</h3>
+<form action="/budgets/" method="post" class="ink-form">
+    <input type='hidden' name='action' value='date_filter'>
+    {% csrf_token %}
+    {{ filter_form }}
+    <input type="submit" value="Change Budget Month" />
+</form>
+<table class="ink-table alternating">
+    <thead>
+    <tr>
+        <th class="align-left">Budget</th>
+        <th class="align-left">Planned</th>
+        <th class="align-left">Actual</th>
+    </tr>
+  </thead>
+    {% for budget in monthlybudgets %}
+    <tr>
+        <td>{{ budget.budget.name }}</td>
+        <td>{{ budget.planned }}</td>
+        {% with tenpercent=budget.planned|mul:0.1 %}
+        <td>{% if budget.actual < budget.planned|sub:tenpercent %}<span style="color:#239b56">{{ budget.actual }}</span>{% elif  budget.actual > budget.planned|sub:tenpercent and budget.actual <= budget.planned %}<span style="color:#dfa704">{{ budget.actual }}</span>{% else %}<span style="color:#eb0d0d">{{ budget.actual }}</span>{% endif %}</td>
+    {% endwith %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

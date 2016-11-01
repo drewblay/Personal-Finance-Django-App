@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>Finances and Budgeting</title>
+    <link rel="stylesheet" href="/static/css/ink.css">
+    <script type="text/javascript" src="http://fastly.ink.sapo.pt/3.1.10/js/ink-all.js"></script>
+    <script type="text/javascript" src="http://fastly.ink.sapo.pt/3.1.10/js/autoload.js"></script>
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+<header class="vertical-space">
+    <h1>Personal Finances<small> Becky and Andrew</small></h1>
+                <nav class="ink-navigation">
+                    <ul class="menu horizontal black">
+                        <li class="active"><a href="/accounts/">Accounts Overview</a></li>
+                        <li><a href="/budgets/">Budgets</a></li>
+                    </ul>
+                </nav>
+            </header>
+    <div id="pageContainer" class="ink-grid">
+        <div class="column-group gutters">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
