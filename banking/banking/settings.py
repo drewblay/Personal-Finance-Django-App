@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'banking.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-print(get_setting("DB_Name"))
+
 DATABASES = {
     'default': {
         'ENGINE': get_setting("DB_Engine"), #'django.db.backends.sqlite3',

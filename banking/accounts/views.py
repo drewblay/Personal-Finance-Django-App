@@ -25,6 +25,5 @@ class AccountsOverview(View):
             else:
                 chart_data[category.name] = 0
 
-
         context = {'accounts': accounts, 'chart_data': chart_data}
         return render(request, 'accounts/overview.html', context)

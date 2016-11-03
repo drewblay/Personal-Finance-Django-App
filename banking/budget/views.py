@@ -5,16 +5,6 @@ import datetime
 from .models import Budget, MonthlyBudget
 from .forms import AddMonthlyBudget, FilterForm
 
-#from accounts.models import Account
-
-# class BudgetOverview(View):
-#
-#     def get(self, request):
-#         monthlybudget = MonthlyBudget.objects.all()
-#
-#         context = {'accounts': accounts}
-#         return render(request, budget/monthlybudget.html, context)
-
 class MonthlyBudgetOverview(View):
 
     def get(self, request):
@@ -55,7 +45,6 @@ class MonthlyBudgetOverview(View):
                     months = []
                     while start_month < 13:
                         months.append(start_month)
-                        #newmonthlybudget = MonthlyBudget.objects.create(budget=newbudget, month=budget_data['starting_month'], planned=budget_data['amount'], actual=0.00)
                         start_month += 1
                     print(months)
                     for month in months:
@@ -70,7 +59,5 @@ class MonthlyBudgetOverview(View):
             else:
                 monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
 
-
-            #print(budget_data)
         context = {'monthlybudgets': monthlybudgets, 'budget_form': budget_form, 'header': header, 'filter_form': filter_form}
         return render(request, 'budget/monthlybudget.html', context)
