@@ -5,7 +5,7 @@ Django application for tracking personal finances
 - django-polymorphic
 - django-mathfilters
 
-##Needed file
+##Needed files
 You will have to create a settings.json file in the /banking/banking folder and add your desired local settings.
 - SECRET_KEY
 - DEBUG
