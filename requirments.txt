@@ -1,0 +1,5 @@
+Django==1.10.2
+django-mathfilters==0.4.0
+django-polymorphic==1.0.2
+psycopg2==2.6.2
+uWSGI==2.0.14
