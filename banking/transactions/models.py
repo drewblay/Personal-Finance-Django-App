@@ -42,7 +42,7 @@ class TransferTransaction(Transaction):
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
