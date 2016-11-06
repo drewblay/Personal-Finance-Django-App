@@ -6,6 +6,17 @@
 {% endblock %}
 {% block content %}
 <h2>Overview of accounts</h2>
+<form action="/accounts/" method="post" class="ink-form">
+    {% csrf_token %}
+    <label for="from_acct">From Account</label>
+    {{ transfer_form.from_acct }}
+    <label for="to_acct">To Account</label>
+    {{ transfer_form.to_acct }}
+    <label for="amount">Amount</label>
+    {{ transfer_form.amount }}
+    <input type="submit" value="Transfer" />
+</form>
+<br />
 <div class="all-25">
 <table class="ink-table alternating">
     <thead>
@@ -16,7 +27,7 @@
     </thead>
 {% for account in accounts %}
     <tr>
-        <td><a href="/transactions/{{ account }}/">{{ account }}</a></td>
+        <td><a href="/transactions/{{ account }}/">{{ account.name }}</a></td>
         <td>{{ account.balance }}</td>
     </tr>
 {% endfor %}

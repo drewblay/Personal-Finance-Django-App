@@ -20,17 +20,9 @@ class EmptyChoiceField(forms.ChoiceField):
 
         super(EmptyChoiceField, self).__init__(choices=choices, required=required, widget=widget, label=label, initial=initial, help_text=help_text, *args, **kwargs)
 
-# class EmptyChoiceField(forms.ChoiceField):
-#     def __init__(self, choices=(), empty_label=None, required=True, widget=None, label=None, initial=None, help_text=None, *args, **kwargs):
-#
-#         # prepend an empty label if it exists (and field is not required!)
-#         if not required and empty_label is not None:
-#             choices = tuple([(u'', empty_label)] + list(choices))
-#         super(EmptyChoiceField, self).__init__(choices=choices, required=required, widget=widget, label=label, initial=initial, help_text=help_text, *args, **kwargs)
 
 class AddTransactionForm(forms.Form):
     date = forms.DateField( widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'size': '10'}))
-    #monthlybudget = EmptyChoiceField(choices=[], required=False)  #forms.CharField(required=False)
     budget = forms.CharField(required=False)
     beneficiary = forms.CharField()
     category = forms.CharField(required=False)
@@ -39,11 +31,9 @@ class AddTransactionForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AddTransactionForm, self).__init__(*args, **kwargs)
-        #BUDGET_CHOICES = Budget.objects.all().values_list("monthlybudget", "monthlybudget").distinct()
-       # empty_label="None"
         self.fields['category'] = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
         self.fields['budget'] = forms.ModelChoiceField(queryset=Budget.objects.all(), empty_label="", required=False)
-        #self.fields['monthlybudget'].choice = tuple([(u'', empty_label)] + list(BUDGET_CHOICES)) #forms.ModelChoiceField(queryset=Budget.objects.all())
+
 
 class FilterForm(forms.Form):
     thirty_days_ago = datetime.datetime.today() + datetime.timedelta(-30)
