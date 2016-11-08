@@ -1,5 +1,6 @@
 # Personal-Finance-Django-App
-Django application for tracking personal finances
+Django application for tracking personal finances.
+Tested with Python 3.5.2
 
 ##Dependancies
 - django-polymorphic
