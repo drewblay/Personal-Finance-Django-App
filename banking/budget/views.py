@@ -31,7 +31,7 @@ class MonthlyBudgetOverview(View):
                 budget_data = {}
                 for key, value in budget_form.cleaned_data.items():
                     budget_data[key] = value
-                newbudget = Budget.objects.filter(name=budget_data['budget']).first() #Look to see if the budget already exisits
+                newbudget = Budget.objects.filter(name=budget_data['budget']).first() #Look to see if the budget already exists
                 if newbudget:
                     pass #if the budget exists then do nothing
                 else:

@@ -27,12 +27,4 @@ class MonthlyBudget(models.Model):
         self.slug = slugify(forslug)
         super(MonthlyBudget, self).save()
 
-class SavingsGoal(models.Model):
-    name = models.CharField(max_length=50)
-    date = models.DateField()
-    target = models.DecimalField(max_digits=100, decimal_places=2)
-    allotted = models.DecimalField(max_digits=100, decimal_places=2)
-    slug = models.SlugField(unique=True)
-
-    def __str__(self):
-        return self.slug
+#TO DO Add savings goals

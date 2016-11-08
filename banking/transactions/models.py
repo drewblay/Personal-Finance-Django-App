@@ -6,7 +6,6 @@ from accounts.models import Account
 from budget.models import MonthlyBudget
 
 
-
 class Transaction(PolymorphicModel):
     date = models.DateField()
     account = models.ForeignKey(Account)
