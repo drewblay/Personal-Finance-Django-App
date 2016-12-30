@@ -29,7 +29,7 @@ def get_setting(setting, secrets=secrets):
         else:
             return secrets[setting]
     except KeyError:
-        error_msg = "Se the (0) env var.".format(setting)
+        error_msg = "No variable named (0) set.".format(setting)
         raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production

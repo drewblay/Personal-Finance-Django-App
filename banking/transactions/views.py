@@ -49,6 +49,7 @@ class AccountTransactions(View): #View transactions from a single account
             if transaction_form.is_valid():
                 transaction_data = {'account': accountobj}
                 for key, value in transaction_form.cleaned_data.items():
+                    ###Handle special fields###
                     if key == "budget":# If the transaction is applied towards a budget:
                         #The transaction will hit the monthly budget for the month the transaction is posted in
                         #If you are paying something for next months budget (i.e. paying the mortgage due the 1st)
@@ -62,25 +63,36 @@ class AccountTransactions(View): #View transactions from a single account
                             if budget:
                                 transaction_data[key] = budget #pass the instance of the monthly budget
                                 #Apply the transaction to the monthly budget
-                                budget.actual = transaction_form.cleaned_data['amount']
+                                new_budget_actual = budget.actual + transaction_form.cleaned_data['amount']
+                                budget.actual = new_budget_actual
                                 budget.save()
-                            else: #Show an error notifying the user that no instance of the budget exists for that month and year
+                            else: #Otherwise show an error notifying the user that no instance of the budget for the given month and year
                                 month = date.strftime('%B')
                                 error = "Error: There is no {} budget for {}. {}. Please add the budget then resubmit the transaction.".format(value, month, year) #if there is no matching budget set the value to Error
                                 context = {'transaction_form': transaction_form, 'error': error, 'account': accountobj, 'filter_form': filter_form}
                                 return render(request, 'transactions\overview.html', context)
-                    elif key == "direction": #We don't want the direction in transaction data dictionary as this is not a field
-                        pass
+                    elif key == "direction": #Convert the direction to either True or False for the debit field
+                        if value == "O": #If money is going OUT it is a debit
+                            transaction_data["debit"] = True
+                        else: #If money is coming in it is not a debit
+                            transaction_data["debit"] = False
+                    ###If there is nothing special with the field just add the key and value to the dictionary###
                     else:
                         transaction_data[key] = value
-                PaymentTransaction.objects.create(**transaction_data) #Create the transaction for the dictionary
 
                 if transaction_form.cleaned_data['direction'] == 'O': #Check the direction of money flow and update the balance of the account
                     new_balance = accountobj.balance - transaction_data['amount'] #Money is going out
                 else:
                     new_balance = accountobj.balance + transaction_data['amount'] #Money coming in
+                transaction_data['balance'] = new_balance
+                PaymentTransaction.objects.create(**transaction_data)  # Create the transaction from the dictionary
                 accountobj.balance = new_balance
                 accountobj.save()
+            else:
+                error = "There was an error with the form"
+                context = {'transaction_form': transaction_form, 'error': error, 'account': accountobj,
+                           'filter_form': filter_form}
+                return render(request, 'transactions\overview.html', context)
 
         elif (action == 'date_filter'):
             filter_form = FilterForm(request.POST, prefix='filter_form')

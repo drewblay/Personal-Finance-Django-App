@@ -1,6 +1,18 @@
 {% extends "base.html" %}
+{% block extra_head %}
+<script src="/static/js/jquery-3.1.1.min.js.js" type="text/javascript"></script>
+<script src="/static/highcharts/highcharts.js"></script>
+<script src="/static/highcharts/modules/exporting.js"></script>
+<script src="/static/js/jquery.chained.min.js" type="text/javascript"></script>
+<script charset=utf-8>
+  $(function(){
+      $("#id_transaction_form-category").chained("#id_transaction_form-budget");
+  });
+  </script>
+{% endblock %}
 {% load humanize %}
 {% block content %}
+
 <form action="/transactions/{{ account }}/" method="post" class="ink-form">
     {% csrf_token %}
     <input type='hidden' name='action' value='add_transaction'>
@@ -9,9 +21,19 @@
     <label for="beneficiary">Beneficiary</label>
     {{ transaction_form.beneficiary }}
     <label for="budget">Budget</label>
-    {{ transaction_form.budget }}
+    <select id="id_transaction_form-budget" name="transaction_form-budget">
+        <option value="" selected="selected">---------</option>
+        {% for item in transaction_form.fields.budget.queryset %}
+        <option value="{{ item.id }}">{{ item.name }}</option>
+        {% endfor %}
+        </select>
     <label for="category">Category</label>
-    {{ transaction_form.category }}
+    <select id="id_transaction_form-category" name="transaction_form-category">
+        <option value="" selected="selected">---------</option>
+        {% for c in transaction_form.fields.category.queryset %}
+        <option value="{{ c.id }}" class="{{ c.budget.id }}">{{ c.name }}</option>
+        {% endfor %}
+    </select>
     <label for="amount">Amount</label>
     {{ transaction_form.amount }}
      <label for="direction"></label>
@@ -34,18 +56,19 @@
         <th class="align-left">Date</th>
         <th class="align-left">Payee</th>
         <th class="align-left">Amount</th>
+        <th class="align-left">Balance</th>
     </tr>
   </thead>
     {% for transaction in transactions %}
     <tr>
         <td>{{ transaction.date }}</td>
-        <td>{{ transaction.beneficiary }}</td>
-        <td>{{ transaction.amount }}</td>
+        <td>{% if transaction.from_account %}TRANSFER from {{transaction.from_account}}{% elif transaction.to_account %}TRANSFER to {{ transaction.to_account }}{% else %}{{ transaction.beneficiary }}{% endif %}</td>
+        <td>{% if transaction.debit == False or transaction.from_account %}+{% endif %}{{ transaction.amount|intcomma }}</td>
+        <td>{{ transaction.balance|intcomma }}</td>
     </tr>
     {% endfor %}
 </table>
 {% if error %}
 <p style="color:#FF5733">{{ error }}</p>
 {% endif %}
-
 {% endblock %}

@@ -3,10 +3,12 @@
 <script src="/static/js/jquery-3.1.1.min.js.js" type="text/javascript"></script>
 <script src="/static/highcharts/highcharts.js"></script>
 <script src="/static/highcharts/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
 {% endblock %}
 {% block content %}
 <h2>Overview of accounts</h2>
 <form action="/accounts/" method="post" class="ink-form">
+    <input type='hidden' name='action' value='transfer'>
     {% csrf_token %}
     <label for="from_acct">From Account</label>
     {{ transfer_form.from_acct }}
@@ -17,6 +19,13 @@
     <input type="submit" value="Transfer" />
 </form>
 <br />
+<h4>Filter Chart Data</h4>
+<form action="/accounts/" method="post" class="ink-form">
+    <input type='hidden' name='action' value='date_filter'>
+    {% csrf_token %}
+    {{ filter_form }}
+    <input type="submit" value="Filter Transactions" />
+</form>
 <div class="all-25">
 <table class="ink-table alternating">
     <thead>
@@ -33,51 +42,61 @@
 {% endfor %}
     </table>
     </div>
-<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+<div id="container" align="right" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
 <script>
 $(function () {
-
-    $(document).ready(function () {
-
-        // Build the chart
-        $('#container').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: 'Spending by Category'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: false
-                    },
-                    showInLegend: true
+    // Create the chart
+    Highcharts.chart('container', {
+        chart: {
+            type: 'pie'
+        },
+        title: {
+            text: 'Spending by Budget {{ chart_header }}'
+        },
+        subtitle: {
+            text: 'Click the slices to view breakdown by category.'
+        },
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}: ${point.y:.1f}'
                 }
-            },
-            series: [{
-                name: 'Brands',
-                colorByPoint: true,
-                data: [
-                 {% for key, value in chart_data.items %}
-                {
-                    name: '{{ key }}',
-                    y: {{ value }}
-                }{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+            }
+        },
 
+        tooltip: {
+            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>${point.y:.2f}</b><br/>'
+        },
+        series: [{
+            name: 'Budgets',
+            colorByPoint: true,
+            data: [
+            {% for key, value in budget_data.items %}
+            {
+                name: '{{ key }}',
+                y: {{ value }},
+                drilldown: '{{ key }}'
+
+            {% if forloop.last %}}]{% else %}},{% endif %}{% endfor %}
+        }],
+        drilldown: {
+            series: [
+                {% for key, value in cat_data.items %}
+                {
+                name: '{{ key }}',
+                id: '{{ key }}',
+                data: [
+                     {% for k, v in value.items %}
+                    ['{{ k }}', {{ v }}]{% if forloop.last %}{% else %},{% endif %}{% endfor %}
                 ]
+
+            {% if forloop.last %}{% else %}},{% endif %}{% endfor %}
+
             }]
-        });
+        }
     });
 });
 </script>
-</div>
 {% endblock %}
