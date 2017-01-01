@@ -11,4 +11,4 @@ class TransferChoiceField(ModelChoiceField):
 class TransferForm(forms.Form):
     from_acct = TransferChoiceField(queryset=Account.objects.all())
     to_acct = TransferChoiceField(queryset=Account.objects.all())
-    amount = forms.DecimalField(max_digits=100, decimal_places=2, widget=forms.TextInput(attrs={'size': '6'}))
+    amount = forms.DecimalField(max_digits=65, decimal_places=2, widget=forms.TextInput(attrs={'size': '6'}))

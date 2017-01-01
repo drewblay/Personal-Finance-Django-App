@@ -15,8 +15,8 @@ class Budget(models.Model):
 class MonthlyBudget(models.Model):
     budget = models.ForeignKey('Budget')
     month = models.DateField()
-    planned = models.DecimalField(max_digits=100, decimal_places=2)
-    actual = models.DecimalField(max_digits=100, decimal_places=2, blank=True, null=True)
+    planned = models.DecimalField(max_digits=65, decimal_places=2)
+    actual = models.DecimalField(max_digits=65, decimal_places=2, blank=True, null=True)
     slug = models.SlugField(unique=True)
 
     def __str__(self):

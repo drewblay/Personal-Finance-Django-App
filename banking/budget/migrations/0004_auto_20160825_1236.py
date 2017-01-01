@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='monthlybudget',
             name='actual',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=100, null=True),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=65, null=True),
         ),
     ]
