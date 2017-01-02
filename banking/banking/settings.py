@@ -101,7 +101,8 @@ DATABASES = {
         'NAME': get_setting("DB_Name"),
         'HOST': get_setting("DB_Host"),
         'USER': get_setting("DB_User"),
-        'PASSWORD': get_setting("DB_Password")
+        'PASSWORD': get_setting("DB_Password"),
+        'OPTIONS': get_setting("DB_Options")
     }
 }
 
