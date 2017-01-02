@@ -10,8 +10,8 @@ from budget.models import MonthlyBudget
 class Transaction(PolymorphicModel):
     date = models.DateField()
     account = models.ForeignKey(Account)
-    amount = models.DecimalField(max_digits=100, decimal_places=2)
-    balance = models.DecimalField(max_digits=100, decimal_places=2)
+    amount = models.DecimalField(max_digits=65, decimal_places=2)
+    balance = models.DecimalField(max_digits=65, decimal_places=2)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
