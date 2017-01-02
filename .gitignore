@@ -1,0 +1,4 @@
+banking/db.sqlite3
+banking/banking/settings.json
+.idea/
+**/.pyc
