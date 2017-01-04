@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View, CreateView, UpdateView
+from django.db.models import Sum
 import datetime
 
 from .models import Budget, MonthlyBudget
@@ -13,8 +14,11 @@ class MonthlyBudgetOverview(View):
         now = datetime.datetime.now()
         monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
         header = now.strftime('%B') + " " + str(now.year)
+        planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
+        actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
+            Sum('actual'))
 
-        context = {'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form}
+        context = {'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
         return render(request, 'budget/monthlybudget.html', context)
 
     def post(self, request):
@@ -24,6 +28,9 @@ class MonthlyBudgetOverview(View):
         action = self.request.POST['action']
         monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
         header = now.strftime('%B') + " " + str(now.year)
+        planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
+        actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
+            Sum('actual'))
 
         if (action == 'add_budget'):
             budget_form = AddMonthlyBudget(request.POST, prefix = 'budget_form')
@@ -50,6 +57,8 @@ class MonthlyBudgetOverview(View):
                     for month in months:
                         budget_month = str(datetime.date(start_year, month, 1))
                         newmonthlybudget = MonthlyBudget.objects.create(budget=newbudget, month=budget_month, planned=budget_data['amount'], actual=0.00)
+                planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
+                    Sum('planned'))
         elif (action == 'date_filter'):
             filter_form = FilterForm(request.POST, prefix='filter_form')
             if filter_form.is_valid():
@@ -59,5 +68,5 @@ class MonthlyBudgetOverview(View):
             else:
                 monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
 
-        context = {'monthlybudgets': monthlybudgets, 'budget_form': budget_form, 'header': header, 'filter_form': filter_form}
+        context = {'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
         return render(request, 'budget/monthlybudget.html', context)

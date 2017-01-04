@@ -5,6 +5,7 @@
 <script src="/static/highcharts/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/drilldown.js"></script>
 {% endblock %}
+{% load humanize %}
 {% block content %}
 <h2>Overview of accounts</h2>
 <form action="/accounts/" method="post" class="ink-form">
@@ -37,7 +38,7 @@
 {% for account in accounts %}
     <tr>
         <td><a href="/transactions/{{ account }}/">{{ account.name }}</a></td>
-        <td>{{ account.balance }}</td>
+        <td>{{ account.balance|intcomma }}</td>
     </tr>
 {% endfor %}
     </table>

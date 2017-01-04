@@ -1,4 +1,6 @@
 banking/db.sqlite3
 banking/banking/settings.json
+static/admin/
+logs/
 .idea/
 **/.pyc

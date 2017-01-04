@@ -36,11 +36,16 @@
     {% for budget in monthlybudgets %}
     <tr>
         <td>{{ budget.budget.name }}</td>
-        <td>{{ budget.planned }}</td>
+        <td>{{ budget.planned|intcomma }}</td>
         {% with tenpercent=budget.planned|mul:0.1 %}
-        <td>{% if budget.actual < budget.planned|sub:tenpercent %}<span style="color:#239b56">{{ budget.actual }}</span>{% elif  budget.actual > budget.planned|sub:tenpercent and budget.actual <= budget.planned %}<span style="color:#dfa704">{{ budget.actual }}</span>{% else %}<span style="color:#eb0d0d">{{ budget.actual }}</span>{% endif %}</td>
+        <td>{% if budget.actual < budget.planned|sub:tenpercent %}<span style="color:#239b56">{{ budget.actual|intcomma }}</span>{% elif  budget.actual > budget.planned|sub:tenpercent and budget.actual <= budget.planned %}<span style="color:#dfa704">{{ budget.actual|intcomma }}</span>{% else %}<span style="color:#eb0d0d">{{ budget.actual|intcomma }}</span>{% endif %}</td>
     {% endwith %}
     </tr>
     {% endfor %}
+    <tr>
+        <td><b>TOTAL</b></td>
+        <td><b>{{ planned_total.planned__sum|intcomma }}</b></td>
+        <td><b>{{ actual_total.actual__sum|intcomma }}</b></td>
+    </tr>
 </table>
 {% endblock %}
