@@ -36,8 +36,9 @@ class AccountsOverview(View):
             if Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id, #If transactions for budget exist
                                           PaymentTransaction___debit=True,
                                           date__range=[start_date, end_date]).count():
-                amount = Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id, PaymentTransaction___debit=True, date__range=[start_date, end_date]).aggregate(
-                    Sum('amount')) #Get the sum of amount for the budget
+                amount = Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id,
+                                                    PaymentTransaction___debit=True,
+                                                    date__range=[start_date, end_date]).aggregate(Sum('amount')) #Get the sum of amount for the budget
                 budget_data[budget.name] = amount['amount__sum'] #Add to budget data
                 # FOR THE DRILL DOWN #
                 for category in categories:
@@ -71,7 +72,6 @@ class AccountsOverview(View):
 
     def post(self, request):
         transfer_form = TransferForm(request.POST, prefix='transfer_form')
-        today = datetime.datetime.today().strftime('%Y-%m-%d')
         action = self.request.POST['action']
 
         if (action == 'transfer'):
@@ -85,9 +85,9 @@ class AccountsOverview(View):
                 to_acct_new_bal = transfer_data['to_acct'].balance + transfer_data['amount']
                 transfer_data['to_acct'].balance = to_acct_new_bal
                 transfer_data['to_acct'].save()
-                TransferTransaction.objects.create(date=today, account=transfer_data['to_acct'],
+                TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
                                                    amount=transfer_data['amount'], from_account=transfer_data['from_acct'], balance=to_acct_new_bal)
-                TransferTransaction.objects.create(date=today, account=transfer_data['from_acct'],
+                TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
                                                    amount=transfer_data['amount'], to_account=transfer_data['to_acct'], balance=from_acct_new_bal)
                 start_date = datetime.datetime.today() + datetime.timedelta(-30)
                 end_date = datetime.datetime.today()

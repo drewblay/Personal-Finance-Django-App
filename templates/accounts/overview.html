@@ -11,6 +11,8 @@
 <form action="/accounts/" method="post" class="ink-form">
     <input type='hidden' name='action' value='transfer'>
     {% csrf_token %}
+     <label for="date">Date</label>
+    {{ transfer_form.date }}
     <label for="from_acct">From Account</label>
     {{ transfer_form.from_acct }}
     <label for="to_acct">To Account</label>
