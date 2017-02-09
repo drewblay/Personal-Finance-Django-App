@@ -65,6 +65,10 @@ class MonthlyBudgetOverview(View):
                 month = filter_form.cleaned_data['month']
                 header = month.strftime('%B') + " " + str(month.year)
                 monthlybudgets = MonthlyBudget.objects.filter(month__year=month.year, month__month=month.month)
+                planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=month.month).aggregate(
+                    Sum('planned'))
+                actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=month.month).aggregate(
+                    Sum('actual'))
             else:
                 monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
 
