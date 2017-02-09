@@ -14,7 +14,7 @@ class AddTransactionForm(forms.Form):
     budget = forms.CharField()
     beneficiary = forms.CharField()
     category = forms.CharField()
-    amount = forms.DecimalField(max_digits=65, decimal_places=2, widget=forms.TextInput(attrs={'size': '6'}))
+    amount = forms.DecimalField(max_digits=65, decimal_places=2, localize=True, widget=forms.TextInput(attrs={'size': '6'}))
     direction = forms.ChoiceField(widget=forms.RadioSelect, choices=DIRECTION_CHOICES, initial="O")
 
     def __init__(self, *args, **kwargs): #Need to overide the init so that the modelchoice queryset will update each time the form loads

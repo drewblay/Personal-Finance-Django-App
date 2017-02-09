@@ -79,7 +79,6 @@ class AccountTransactions(View): #View transactions from a single account
                     ###If there is nothing special with the field just add the key and value to the dictionary###
                     else:
                         transaction_data[key] = value
-
                 if transaction_form.cleaned_data['direction'] == 'O': #Check the direction of money flow and update the balance of the account
                     new_balance = accountobj.balance - transaction_data['amount'] #Money is going out
                 else:
