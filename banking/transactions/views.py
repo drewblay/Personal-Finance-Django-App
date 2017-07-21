@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View, CreateView, UpdateView, FormView
+from django.db.models import Sum
 import datetime
 
 from .models import Transaction, PaymentTransaction
@@ -7,42 +8,54 @@ from accounts.models import Account
 from .forms import AddTransactionForm, FilterForm
 from budget.models import MonthlyBudget
 
-class AllTransactions(View): #This is a view of transactions from ALL accounts
-
-    def get(self, request):
-        today = datetime.datetime.today().strftime('%Y-%m-%d')
-        thirty_days_ago = datetime.datetime.today() + datetime.timedelta(-30)
-        thirty_days_ago = thirty_days_ago.strftime('%Y-%m-%d')
-        transactions = Transaction.objects.filter(date__range=[thirty_days_ago, today]).order_by('date')
-
-        context = {'transactions': transactions}
-        return render(request, 'transactions/overview.html', context)
-
 
 class AccountTransactions(View): #View transactions from a single account
 
-    def get(self, request, account):
+    def get_context_data(self, *args, **kwargs):
         transaction_form = AddTransactionForm(prefix='transaction_form')
         filter_form = FilterForm(prefix='filter_form')
-        accountobj = Account.objects.get(slug = account)
+        accountobj = Account.objects.get(slug=kwargs['account'])
         today = datetime.datetime.today().strftime('%Y-%m-%d')
+
         thirty_days_ago = datetime.datetime.today() + datetime.timedelta(-30)
         thirty_days_ago = thirty_days_ago.strftime('%Y-%m-%d')
-        transactions = Transaction.objects.filter(account = accountobj, date__range=[thirty_days_ago, today]).order_by('date')
 
-        context = {'transactions': transactions, 'account': accountobj, 'transaction_form': transaction_form, 'filter_form': filter_form}
-        return render(request, 'transactions/overview.html', context)
+        start_date = kwargs['start_date']
+        end_date = kwargs['end_date']
+
+        if start_date == 0 and end_date == 0:
+            transactions = Transaction.objects.filter(account=accountobj, date__range=[thirty_days_ago, today]).order_by('date')
+            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=thirty_days_ago).order_by('date').reverse()
+        else:
+            transactions = Transaction.objects.filter(account=accountobj, date__range=[start_date, end_date]).order_by('date')
+            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=start_date).order_by('date').reverse()
+
+        balances = {}
+        balance = accountobj.balance
+
+        for item in total_transactions:
+            balances[item.id] = balance
+            if item.debit == True:
+                balance = item.amount + balance
+            elif item.debit == False:
+                balance = balance - item.amount
+
+        context = {'transactions': transactions, 'account': accountobj, 'transaction_form': transaction_form, 'filter_form': filter_form, 'balances': balances}
+        return context
+
+
+    def get(self, request, account):
+        start_date = 0
+        end_date = 0
+
+        return render(request, 'transactions/overview.html', self.get_context_data(request, account=account, start_date=start_date, end_date=end_date))
+
 
     def post(self, request, account):
-
-        transaction_form = AddTransactionForm(prefix='transaction_form')
-        filter_form = FilterForm(prefix='filter_form')
         action = self.request.POST['action']
         accountobj = Account.objects.get(slug = account)
-        today = datetime.datetime.today().strftime('%Y-%m-%d')
-        thirty_days_ago = datetime.datetime.today() + datetime.timedelta(-30)
-        thirty_days_ago = thirty_days_ago.strftime('%Y-%m-%d')
-        transactions = Transaction.objects.filter(account = accountobj, date__range=[thirty_days_ago, today]).order_by('date')
+        start_date =0
+        end_date = 0
 
         if (action == 'add_transaction'):
             transaction_form = AddTransactionForm(request.POST, prefix='transaction_form')
@@ -102,5 +115,4 @@ class AccountTransactions(View): #View transactions from a single account
         else:
             transactions = Transaction.objects.filter(account = accountobj, date__range=[thirty_days_ago, today]).order_by('date')
 
-        context = {'transaction_form': transaction_form, 'transactions': transactions, 'account': accountobj, 'filter_form': filter_form}
-        return render(request, 'transactions/overview.html', context)
+        return render(request, 'transactions/overview.html',  self.get_context_data(request, account=account, start_date=start_date, end_date=end_date))
