@@ -25,18 +25,21 @@ class AccountTransactions(View): #View transactions from a single account
 
         if start_date == 0 and end_date == 0:
             transactions = Transaction.objects.filter(account=accountobj, date__range=[thirty_days_ago, today]).order_by('date')
-            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=thirty_days_ago).order_by('date').reverse()
+            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=thirty_days_ago).order_by('date', 'id').reverse()
         else:
             transactions = Transaction.objects.filter(account=accountobj, date__range=[start_date, end_date]).order_by('date')
-            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=start_date).order_by('date').reverse()
+            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=start_date).order_by('date', 'id').reverse()
 
         balances = {}
         balance = accountobj.balance
 
         for item in total_transactions:
             balances[item.id] = balance
+            print(item.beneficiary)
+
             if item.debit == True:
                 balance = item.amount + balance
+                print(balance)
             elif item.debit == False:
                 balance = balance - item.amount
 

@@ -6,7 +6,7 @@ import datetime
 from .models import Account
 from .forms import TransferForm
 from transactions.forms import FilterForm
-from transactions.models import Transaction, Category, TransferTransaction
+from transactions.models import Transaction, Category, TransferTransaction, PaymentTransaction
 from budget.models import Budget
 
 class AccountsOverview(View):
@@ -85,10 +85,19 @@ class AccountsOverview(View):
                 to_acct_new_bal = transfer_data['to_acct'].balance + transfer_data['amount']
                 transfer_data['to_acct'].balance = to_acct_new_bal
                 transfer_data['to_acct'].save()
-                TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
-                                                   amount=transfer_data['amount'], from_account=transfer_data['from_acct'], balance=to_acct_new_bal)
-                TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
-                                                   amount=transfer_data['amount'], to_account=transfer_data['to_acct'], balance=from_acct_new_bal)
+
+                PaymentTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
+                                                  amount=transfer_data['amount'], beneficiary="TRANSFER IN FROM {}".format(transfer_data['from_acct']),
+                                                  balance=to_acct_new_bal, debit=False)
+                PaymentTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
+                                                  amount=transfer_data['amount'], beneficiary="TRANSFER OUT TO {}".format(transfer_data['to_acct']),
+                                                  balance=from_acct_new_bal, debit=True)
+
+                # TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
+                #                                    amount=transfer_data['amount'], from_account=transfer_data['from_acct'], balance=to_acct_new_bal)
+                # TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
+                #                                    amount=transfer_data['amount'], to_account=transfer_data['to_acct'], balance=from_acct_new_bal)
+
                 start_date = datetime.datetime.today() + datetime.timedelta(-30)
                 end_date = datetime.datetime.today()
         elif (action == 'date_filter'):
