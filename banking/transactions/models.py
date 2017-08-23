@@ -7,11 +7,15 @@ from accounts.models import Account
 from budget.models import MonthlyBudget
 
 
-class Transaction(PolymorphicModel):
+class Transaction(models.Model):
     date = models.DateField()
     account = models.ForeignKey(Account)
     amount = models.DecimalField(max_digits=65, decimal_places=2)
     balance = models.DecimalField(max_digits=65, decimal_places=2)
+    beneficiary = models.CharField(max_length=50)
+    budget = models.ForeignKey(MonthlyBudget, blank=True, null=True)
+    category = models.ForeignKey('Category', blank=True, null=True)
+    debit = models.BooleanField(default=True)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
@@ -23,15 +27,15 @@ class Transaction(PolymorphicModel):
         self.slug = slugify(forslug)
         super(Transaction, self).save()
 
-class PaymentTransaction(Transaction):
-    beneficiary = models.CharField(max_length=50)
-    budget = models.ForeignKey(MonthlyBudget, blank=True, null=True)
-    category = models.ForeignKey('Category', blank=True, null=True)
-    debit = models.BooleanField(default=True)
-
-class TransferTransaction(Transaction):
-    from_account = models.ForeignKey(Account, related_name='from_account', blank=True, null=True)
-    to_account = models.ForeignKey(Account, related_name='to_account', blank=True, null=True)
+# class PaymentTransaction(Transaction):
+#     beneficiary = models.CharField(max_length=50)
+#     budget = models.ForeignKey(MonthlyBudget, blank=True, null=True)
+#     category = models.ForeignKey('Category', blank=True, null=True)
+#     debit = models.BooleanField(default=True)
+#
+# class TransferTransaction(Transaction):
+#     from_account = models.ForeignKey(Account, related_name='from_account', blank=True, null=True)
+#     to_account = models.ForeignKey(Account, related_name='to_account', blank=True, null=True)
 
 class Category(models.Model):
     name = models.CharField(max_length=50)

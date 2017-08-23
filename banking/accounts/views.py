@@ -6,7 +6,7 @@ import datetime
 from .models import Account
 from .forms import TransferForm
 from transactions.forms import FilterForm
-from transactions.models import Transaction, Category, TransferTransaction, PaymentTransaction
+from transactions.models import Transaction, Category
 from budget.models import Budget
 
 class AccountsOverview(View):
@@ -86,10 +86,10 @@ class AccountsOverview(View):
                 transfer_data['to_acct'].balance = to_acct_new_bal
                 transfer_data['to_acct'].save()
 
-                PaymentTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
+                Transaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
                                                   amount=transfer_data['amount'], beneficiary="TRANSFER IN FROM {}".format(transfer_data['from_acct']),
                                                   balance=to_acct_new_bal, debit=False)
-                PaymentTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
+                Transaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
                                                   amount=transfer_data['amount'], beneficiary="TRANSFER OUT TO {}".format(transfer_data['to_acct']),
                                                   balance=from_acct_new_bal, debit=True)
 

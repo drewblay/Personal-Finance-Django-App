@@ -3,7 +3,7 @@ from django.views.generic import View, CreateView, UpdateView, FormView
 from django.db.models import Sum
 import datetime
 
-from .models import Transaction, PaymentTransaction
+from .models import Transaction
 from accounts.models import Account
 from .forms import AddTransactionForm, FilterForm
 from budget.models import MonthlyBudget
@@ -100,7 +100,7 @@ class AccountTransactions(View): #View transactions from a single account
                 else:
                     new_balance = accountobj.balance + transaction_data['amount'] #Money coming in
                 transaction_data['balance'] = new_balance
-                PaymentTransaction.objects.create(**transaction_data)  # Create the transaction from the dictionary
+                Transaction.objects.create(**transaction_data)  # Create the transaction from the dictionary
                 accountobj.balance = new_balance
                 accountobj.save()
             else:
