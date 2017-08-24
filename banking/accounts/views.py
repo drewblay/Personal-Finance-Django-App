@@ -33,30 +33,22 @@ class AccountsOverview(View):
 
         for budget in budgets:
             subcat = {} #This will hold the drill down data for each budget
-            if Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id, #If transactions for budget exist
-                                          PaymentTransaction___debit=True,
-                                          date__range=[start_date, end_date]).count():
-                amount = Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id,
-                                                    PaymentTransaction___debit=True,
-                                                    date__range=[start_date, end_date]).aggregate(Sum('amount')) #Get the sum of amount for the budget
+            if Transaction.objects.filter(budget__budget=budget.id, debit=True, date__range=[start_date, end_date]).count(): #If transactions for budget exist
+                amount = Transaction.objects.filter(budget__budget=budget.id, debit=True, date__range=[start_date, end_date]).aggregate(Sum('amount')) #Get the sum of amount for the budget
                 budget_data[budget.name] = amount['amount__sum'] #Add to budget data
                 # FOR THE DRILL DOWN #
                 for category in categories:
-                    if Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id, #If the category exists in the given budget
-                                                  PaymentTransaction___category=category.id,
-                                                  PaymentTransaction___debit=True,
+                    if Transaction.objects.filter(budget__budget=budget.id, #If the category exists in the given budget
+                                                  category=category.id,
+                                                  debit=True,
                                                   date__range=[start_date, end_date]).count():
-                        category_amount = Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id,
-                                                                     PaymentTransaction___category=category.id, ).aggregate(
-                            Sum('amount')) #Get the sum of the amount for the category
+                        category_amount = Transaction.objects.filter(budget__budget=budget.id, category=category.id).aggregate(Sum('amount')) #Get the sum of the amount for the category
                         subcat[category.name] = category_amount['amount__sum']
-                    if Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id, #If there are uncategorized transactions in the budget
-                                                  PaymentTransaction___category__isnull=True,
-                                                  PaymentTransaction___debit=True,
+                    if Transaction.objects.filter(budget__budget=budget.id, #If there are uncategorized transactions in the budget
+                                                  category__isnull=True,
+                                                  debit=True,
                                                   date__range=[start_date, end_date]).count():
-                        category_amount = Transaction.objects.filter(PaymentTransaction___budget__budget=budget.id,
-                                                                     PaymentTransaction___category__isnull=True, ).aggregate(
-                            Sum('amount'))
+                        category_amount = Transaction.objects.filter(budget__budget=budget.id, category__isnull=True).aggregate(Sum('amount'))
                         subcat['Uncatorgorized'] = category_amount['amount__sum']
                 cat_data[budget.name] = subcat
                 # END DRILL DOWN #
@@ -92,11 +84,6 @@ class AccountsOverview(View):
                 Transaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
                                                   amount=transfer_data['amount'], beneficiary="TRANSFER OUT TO {}".format(transfer_data['to_acct']),
                                                   balance=from_acct_new_bal, debit=True)
-
-                # TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
-                #                                    amount=transfer_data['amount'], from_account=transfer_data['from_acct'], balance=to_acct_new_bal)
-                # TransferTransaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
-                #                                    amount=transfer_data['amount'], to_account=transfer_data['to_acct'], balance=from_acct_new_bal)
 
                 start_date = datetime.datetime.today() + datetime.timedelta(-30)
                 end_date = datetime.datetime.today()

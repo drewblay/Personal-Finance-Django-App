@@ -48,4 +48,8 @@
         <td><b>{{ actual_total.actual__sum|intcomma }}</b></td>
     </tr>
 </table>
+<hr />
+<h3>Cash flow</h3>
+<p>Money In: ${{ cash_in.amount__sum|intcomma }}</p>
+<p>Money Out: ${{ cash_out.amount__sum|intcomma }}</p>
 {% endblock %}

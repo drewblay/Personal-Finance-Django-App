@@ -4,6 +4,7 @@ from django.db.models import Sum
 import datetime
 
 from .models import Budget, MonthlyBudget
+from transactions.models import Transaction
 from .forms import AddMonthlyBudget, FilterForm
 
 class MonthlyBudgetOverview(View):
@@ -15,10 +16,12 @@ class MonthlyBudgetOverview(View):
         monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
         header = now.strftime('%B') + " " + str(now.year)
         planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
-        actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
-            Sum('actual'))
+        actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('actual'))
+        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False).aggregate(Sum('amount'))
+        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True).aggregate(
+            Sum('amount'))
 
-        context = {'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
+        context = {'cash_out': cash_out, 'cash_in': cash_in, 'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
         return render(request, 'budget/monthlybudget.html', context)
 
     def post(self, request):
@@ -31,6 +34,10 @@ class MonthlyBudgetOverview(View):
         planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
         actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
             Sum('actual'))
+        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False).aggregate(
+            Sum('amount'))
+        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True).aggregate(
+            Sum('amount'))
 
         if (action == 'add_budget'):
             budget_form = AddMonthlyBudget(request.POST, prefix = 'budget_form')
@@ -72,5 +79,5 @@ class MonthlyBudgetOverview(View):
             else:
                 monthlybudgets = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month)
 
-        context = {'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
+        context = {'cash_out': cash_out, 'cash_in': cash_in, 'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
         return render(request, 'budget/monthlybudget.html', context)

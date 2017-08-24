@@ -10,7 +10,7 @@ DIRECTION_CHOICES=(
 )
 
 class AddTransactionForm(forms.Form):
-    date = forms.DateField( widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'size': '10'}))
+    date = forms.DateField( widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'size': '10', 'data-start-week-day': "0"}))
     budget = forms.CharField()
     beneficiary = forms.CharField()
     category = forms.CharField()
@@ -26,5 +26,5 @@ class AddTransactionForm(forms.Form):
 class FilterForm(forms.Form):
     thirty_days_ago = datetime.datetime.today() + datetime.timedelta(-30)
     thirty_days_ago = thirty_days_ago.strftime('%Y-%m-%d')
-    start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'data-start-date': thirty_days_ago}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'ink-datepicker'}))
+    start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'data-start-date': thirty_days_ago, 'data-start-week-day': "0"}))
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'ink-datepicker', 'data-start-week-day': "0"}))
