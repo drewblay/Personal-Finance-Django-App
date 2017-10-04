@@ -27,15 +27,6 @@ class Transaction(models.Model):
         self.slug = slugify(forslug)
         super(Transaction, self).save()
 
-# class PaymentTransaction(Transaction):
-#     beneficiary = models.CharField(max_length=50)
-#     budget = models.ForeignKey(MonthlyBudget, blank=True, null=True)
-#     category = models.ForeignKey('Category', blank=True, null=True)
-#     debit = models.BooleanField(default=True)
-#
-# class TransferTransaction(Transaction):
-#     from_account = models.ForeignKey(Account, related_name='from_account', blank=True, null=True)
-#     to_account = models.ForeignKey(Account, related_name='to_account', blank=True, null=True)
 
 class Category(models.Model):
     name = models.CharField(max_length=50)

@@ -42,7 +42,7 @@ class AccountsOverview(View):
                                                   category=category.id,
                                                   debit=True,
                                                   date__range=[start_date, end_date]).count():
-                        category_amount = Transaction.objects.filter(budget__budget=budget.id, category=category.id).aggregate(Sum('amount')) #Get the sum of the amount for the category
+                        category_amount = Transaction.objects.filter(budget__budget=budget.id, category=category.id, debit=True, date__range=[start_date, end_date]).aggregate(Sum('amount')) #Get the sum of the amount for the category
                         subcat[category.name] = category_amount['amount__sum']
                     if Transaction.objects.filter(budget__budget=budget.id, #If there are uncategorized transactions in the budget
                                                   category__isnull=True,
