@@ -16,7 +16,7 @@ from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_DIRECTORY = os.path.normpath(os.getcwd() + os.sep + os.pardir)
-USE_THOUSAND_SEPARATOR = True
+USE_THOUSAND_SEPARATOR = False
 
 with open(BASE_DIR + "/banking/settings.json") as f:
     secrets = json.loads(f.read())
