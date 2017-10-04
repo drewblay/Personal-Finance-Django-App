@@ -14,7 +14,7 @@ class AccountsOverview(View):
     def get_context(self, *args, **kwargs):
         transfer_form = TransferForm(prefix='transfer_form')
         filter_form = FilterForm(prefix='filter_form')
-        accounts = Account.objects.all()
+        accounts = Account.objects.all().order_by('name')
 
         ## CODE FOR CHART DATA ##
         categories = Category.objects.all() #Categories for drill down
