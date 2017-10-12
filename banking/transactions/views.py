@@ -25,7 +25,7 @@ class AccountTransactions(View): #View transactions from a single account
 
         if start_date == 0 and end_date == 0:
             transactions = Transaction.objects.filter(account=accountobj, date__range=[thirty_days_ago, today]).order_by('date')
-            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=thirty_days_ago).order_by('date', 'id').reverse()
+            total_transactions = Transaction.objects.filter(account=accountobj, date__gte=thirty_days_ago).order_by('date').reverse()
         else:
             transactions = Transaction.objects.filter(account=accountobj, date__range=[start_date, end_date]).order_by('date')
             total_transactions = Transaction.objects.filter(account=accountobj, date__gte=start_date).order_by('date').reverse()
