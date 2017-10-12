@@ -35,13 +35,10 @@ class AccountTransactions(View): #View transactions from a single account
 
         for item in total_transactions:
             balances[item.id] = balance
-            print(item.beneficiary)
-
             if item.debit == True:
                 balance = item.amount + balance
-                print(balance)
             elif item.debit == False:
-                balance = balance - item.amount
+                balance = balance - item .amount
 
         context = {'transactions': transactions, 'account': accountobj, 'transaction_form': transaction_form, 'filter_form': filter_form, 'balances': balances}
         return context
