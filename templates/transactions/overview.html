@@ -64,7 +64,7 @@
         <td>{{ transaction.date }}</td>
         <td>{% if transaction.from_account %}TRANSFER from {{transaction.from_account}}{% elif transaction.to_account %}TRANSFER to {{ transaction.to_account }}{% else %}{{ transaction.beneficiary }}{% endif %}</td>
         <td>{% if transaction.debit == False or transaction.from_account %}+{% endif %}{{ transaction.amount|intcomma }}</td>
-        <td>{% for key, value in balances.items%}{% if key == transaction.id %}{{ value }} - ({ id}){% endif %}{% endfor %}</td>
+        <td>{% for key, value in balances.items%}{% if key == transaction.id %}{{ value }} - ({ key }}){% endif %}{% endfor %}</td>
     </tr>
     {% endfor %}
 </table>
