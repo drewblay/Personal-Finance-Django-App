@@ -16,6 +16,7 @@ class Transaction(models.Model):
     budget = models.ForeignKey(MonthlyBudget, blank=True, null=True)
     category = models.ForeignKey('Category', blank=True, null=True)
     debit = models.BooleanField(default=True)
+    transfer = models.BooleanField(default=False)
     slug = models.SlugField(unique=True)
 
     def __str__(self):

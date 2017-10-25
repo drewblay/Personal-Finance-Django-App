@@ -80,10 +80,10 @@ class AccountsOverview(View):
 
                 Transaction.objects.create(date=transfer_data['date'], account=transfer_data['to_acct'],
                                                   amount=transfer_data['amount'], beneficiary="TRANSFER IN FROM {}".format(transfer_data['from_acct']),
-                                                  balance=to_acct_new_bal, debit=False)
+                                                  balance=to_acct_new_bal, debit=False, transfer=True)
                 Transaction.objects.create(date=transfer_data['date'], account=transfer_data['from_acct'],
                                                   amount=transfer_data['amount'], beneficiary="TRANSFER OUT TO {}".format(transfer_data['to_acct']),
-                                                  balance=from_acct_new_bal, debit=True)
+                                                  balance=from_acct_new_bal, debit=True, transfer=True)
 
                 start_date = datetime.datetime.today() + datetime.timedelta(-30)
                 end_date = datetime.datetime.today()

@@ -17,8 +17,8 @@ class MonthlyBudgetOverview(View):
         header = now.strftime('%B') + " " + str(now.year)
         planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
         actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('actual'))
-        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False).aggregate(Sum('amount'))
-        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True).aggregate(
+        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False, transfer=False).aggregate(Sum('amount'))
+        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True, transfer=False).aggregate(
             Sum('amount'))
 
         context = {'cash_out': cash_out, 'cash_in': cash_in, 'monthlybudgets': monthlybudgets,'budget_form': budget_form, 'header': header, 'filter_form': filter_form, 'planned_total': planned_total, 'actual_total': actual_total}
@@ -34,9 +34,9 @@ class MonthlyBudgetOverview(View):
         planned_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(Sum('planned'))
         actual_total = MonthlyBudget.objects.filter(month__year=now.year, month__month=now.month).aggregate(
             Sum('actual'))
-        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False).aggregate(
+        cash_in = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=False, transfer=False).aggregate(
             Sum('amount'))
-        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True).aggregate(
+        cash_out = Transaction.objects.filter(date__year=now.year, date__month=now.month, debit=True, transfer=False).aggregate(
             Sum('amount'))
 
         if (action == 'add_budget'):
